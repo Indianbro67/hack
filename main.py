@@ -17,31 +17,21 @@ client = TelegramClient(
     api_hash,
 )
 
-async def get_group_entity():
-    # Replace YOUR_GROUP_USERNAME with the username of the private group you want to download from
-    group_username = 'YOUR_GROUP_USERNAME'
-    group_entity = await client.get_entity(group_username)
-    return group_entity
+client.start()
+
+# Replace the following with the desired private group chat ID
+desired_group_chat_id = 1914730364
+
+@client.on(events.NewMessage(chats=desired_group_chat_id))
+async def downloader(event):
+    result = await event.download_media()
+    # You can add custom logic here to handle the downloaded media
+    print(f"Downloaded media from chat {desired_group_chat_id}: {result}")
+    
+    # Upload the downloaded image to your saved messages
+    await client.send_file('me', result, caption=f"Uploaded media from chat {desired_group_chat_id}!")
 
 async def main():
-    await client.start()
-    logger.info("Client is ready.")
-    
-    # Get the group entity
-    group_entity = await get_group_entity()
-
-    @client.on(events.NewMessage(chats=group_entity))
-    async def downloader(event):
-        # Check if the message contains media
-        if event.media:
-            result = await event.download_media()
-            # You can add custom logic here to handle the downloaded media
-            print(f"Downloaded media from the group: {result}")
-
-            # Upload the downloaded media to your saved messages
-            await client.send_file('me', result, caption="Uploaded media from the group!")
-
-    logger.info("Bot is running...")
     await client.run_until_disconnected()
 
 if __name__ == "__main__":
