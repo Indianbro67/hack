@@ -21,22 +21,19 @@ client.start()
 
 @client.on(events.NewMessage)
 async def downloader(event):
-    # Check if the message is from a private chat and contains a photo or video
-    if event.is_private and event.media and event.out is False:
-        # Check if the message contains a photo
-        if event.photo:
-            result = await event.download_media()
-            # You can add custom logic here to handle the downloaded image
-            print(f"Downloaded image: {result}")
-            # Send the downloaded image to the saved messages
-            await client.send_file('me', result, caption="Here is the downloaded image!")
-        # Check if the message contains a video
-        elif event.video:
-            result = await event.download_media()
-            # You can add custom logic here to handle the downloaded video
-            print(f"Downloaded video: {result}")
-            # Send the downloaded video to the saved messages
-            await client.send_file('me', result, caption="Here is the downloaded video!")
+    # Download the media (if any) from the message
+    result = await event.download_media()
+    # You can add custom logic here to handle the downloaded media
 
-asyncio.get_event_loop().run_forever()
-client.run_until_disconnected()
+    # Get the chat ID of the incoming message
+    chat_id = event.chat_id
+    print(f"Received message in chat with ID: {chat_id}")
+
+    # Send the chat ID to the saved messages
+    await client.send_message('me', f"Received message in chat with ID: {chat_id}")
+
+async def main():
+    asyncio.get_event_loop().run_forever()
+
+if __name__ == "__main__":
+    client.loop.run_until_complete(main())
