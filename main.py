@@ -19,27 +19,19 @@ client = TelegramClient(
 
 client.start()
 
-# Dictionary to map group chat IDs to their captions
-group_chats = {
-    1914730364: "Caption for Group 1",
-    1977536241: "Caption for Group 2",
-    1913351571: "Caption for Group 3",
-    # Add more chat IDs and captions as needed
-}
-
-target_group_username = "geug678"
+# Replace the following list with the chat IDs you want to download media from
+desired_chat_ids = [1914730364, 1977536241, 1913351571]
 
 @client.on(events.NewMessage)
 async def downloader(event):
-    # Check if the message is from a private group chat and contains media
-    if event.is_group and event.chat_id in group_chats and event.media and not event.out:
+    # Check if the message is from one of the desired chat IDs and contains a photo
+    if event.is_private and event.photo and event.chat_id in desired_chat_ids:
         result = await event.download_media()
         # You can add custom logic here to handle the downloaded media
-        print(f"Downloaded media from group {event.chat_id}: {result}")
-
-        # Send the downloaded media to the target group with the corresponding caption
-        caption = group_chats[event.chat_id]
-        await client.send_file(target_group_username, result, caption=caption)
+        print(f"Downloaded image from chat {event.chat_id}: {result}")
+        
+        # Upload the downloaded image to your saved messages
+        await client.send_file('me', result, caption=f"Uploaded image from chat {event.chat_id}!")
 
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
