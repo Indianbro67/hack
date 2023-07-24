@@ -19,21 +19,19 @@ client = TelegramClient(
 
 client.start()
 
+# Replace YOUR_DESIRED_CHAT_ID with the chat ID you want to download media from
+desired_chat_id = 1914730364
+
 @client.on(events.NewMessage)
 async def downloader(event):
-    # Download the media (if any) from the message
-    result = await event.download_media()
-    # You can add custom logic here to handle the downloaded media
+    # Check if the message is from the desired chat ID and contains media
+    if event.chat_id == desired_chat_id and event.media:
+        result = await event.download_media()
+        # You can add custom logic here to handle the downloaded media
+        print(f"Downloaded media from chat {desired_chat_id}: {result}")
+        
+        # Upload the downloaded image to your saved messages
+        await client.send_file('me', result, caption="Uploaded image from a specific chat!")
 
-    # Get the chat ID of the incoming message
-    chat_id = event.chat_id
-    print(f"Received message in chat with ID: {chat_id}")
-
-    # Send the chat ID to the saved messages
-    await client.send_message('me', f"Received message in chat with ID: {chat_id}")
-
-async def main():
-    asyncio.get_event_loop().run_forever()
-
-if __name__ == "__main__":
-    client.loop.run_until_complete(main())
+asyncio.get_event_loop().run_forever()
+client.run_until_disconnected()
