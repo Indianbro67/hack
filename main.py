@@ -17,12 +17,25 @@ client = TelegramClient(
     api_hash,
 )
 
-client.start()
+async def send_to_saved_messages(file_path):
+    try:
+        await client.send_file('me', file_path)
+        logger.info(f"File '{file_path}' uploaded to Saved Messages.")
+    except Exception as e:
+        logger.error(f"Failed to upload '{file_path}' to Saved Messages. Error: {e}")
 
 @client.on(events.NewMessage)
 async def downloader(event):
     result = await event.download_media()
     # You can add custom logic here to handle the downloaded media
+    # For example, you can specify the directory to save the files or perform other operations.
 
-asyncio.get_event_loop().run_forever()
-client.run_until_disconnected()
+    # Now, let's upload the downloaded file to Saved Messages.
+    await send_to_saved_messages(result)
+
+async def main():
+    await client.start()
+    await client.run_until_disconnected()
+
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())
