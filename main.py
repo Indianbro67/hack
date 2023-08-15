@@ -26,10 +26,11 @@ async def downloader(event):
         result = await event.download_media()
         
         try:
-            # Upload the downloaded media (photo or video) to saved messages
-            await client.send_file('me', result)
+            # Upload the downloaded media (photo or video) to saved messages with a caption
+            caption = "@Save_all_file_bot"
+            await client.send_file('me', result, caption=caption)
             
-            print(f"Downloaded media: {result} and uploaded to saved messages")
+            print(f"Downloaded media: {result} and uploaded to saved messages with caption")
         finally:
             # Delete the downloaded file, whether uploading succeeds or not
             os.remove(result)
